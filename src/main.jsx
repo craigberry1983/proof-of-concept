@@ -8,7 +8,7 @@ import "./styles.css";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <MsalProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/proof-of-concept">
         <App />
       </BrowserRouter>
     </MsalProvider>
