@@ -1,7 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaTimes, FaCog, FaPaperPlane } from "react-icons/fa";
 import { useMsal } from "../common/MsalContext";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { LiveScanPlugin } from "./LiveScanPlugin";
+import { UNDO_COMMAND, REDO_COMMAND, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND } from "lexical";
+import { FaTimes, FaCog, FaPaperPlane, FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa";
+
+import "../styles.css";
 
 function SendScreen() {
   const navigate = useNavigate();
@@ -13,6 +23,7 @@ function SendScreen() {
   const [userEmail, setUserEmail] = useState("");
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
 
+  //auto-scroll
   const toRef = useRef();
   const subjectRef = useRef();
   const bodyRef = useRef();
@@ -83,41 +94,61 @@ function SendScreen() {
     navigate("/");
   };
 
+  const CustomContent = useMemo(() => {
+    return (
+      <ContentEditable
+        ref={bodyRef}
+        onFocus={() => scrollIntoView(bodyRef)}
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          userSelect: "text",
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+          backgroundColor: "transparent",
+        }}
+      />
+    );
+  }, []);
+
+  const lexicalConfig = {
+    namespace: "alphypoc",
+    theme: {
+      text: {
+        bold: "text-bold",
+        italic: "text-italic",
+        underline: "text-underline",
+        strikethrough: "text-strikethrough",
+      },
+    },
+    onError: (e) => {
+      console.log("ERROR:", e);
+    },
+  };
+
   return (
-    <div className="send">
-      <div className="header-bar">
-        <button className="icon-button close-button" onClick={confirmLogout}>
-          <FaTimes />
-        </button>
-        <strong className="header-title">New message</strong>
-        <span className="user-email">{userEmail}</span>
-        <button className="icon-button gear-button">
-          <FaCog />
-        </button>
-        <button className="icon-button send-button" onClick={handleSend}>
-          <FaPaperPlane />
-        </button>
-      </div>
-
-      <div className="email-area">
+    <div className="send-page">
+      <LexicalComposer initialConfig={lexicalConfig}>
+        <header>
+          <button className="icon-button close-button" onClick={confirmLogout}>
+            <FaTimes />
+          </button>
+          <strong className="header-title">New message</strong>
+          <span className="user-email">{userEmail}</span>
+          <button className="icon-button gear-button">
+            <FaCog />
+          </button>
+          <button className="icon-button send-button" onClick={handleSend}>
+            <FaPaperPlane />
+          </button>
+        </header>
+        <EditorToolbar />
         <input ref={toRef} type="email" placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} onFocus={() => scrollIntoView(toRef)} />
-        <input
-          ref={subjectRef}
-          type="text"
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          onFocus={() => scrollIntoView(subjectRef)}
-        />
-
-        <textarea
-          ref={bodyRef}
-          placeholder="Message"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          onFocus={() => scrollIntoView(bodyRef)}
-        />
-      </div>
+        <input ref={subjectRef} type="text" placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} onFocus={() => scrollIntoView(subjectRef)} />
+        <LiveScanPlugin />
+        <RichTextPlugin className="message-area" contentEditable={CustomContent} ErrorBoundary={LexicalErrorBoundary}></RichTextPlugin>
+        <HistoryPlugin />
+      </LexicalComposer>
 
       {showConfirmLogout && (
         <div className="modal-overlay">
@@ -128,6 +159,42 @@ function SendScreen() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function EditorToolbar() {
+  const [editor] = useLexicalComposerContext();
+
+  return (
+    <div className="toolbar">
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}>
+        <FaUndo />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}>
+        <FaRedo />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}>
+        <FaBold />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}>
+        <FaItalic />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}>
+        <FaUnderline />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")}>
+        <FaStrikethrough />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}>
+        <FaAlignLeft />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}>
+        <FaAlignCenter />
+      </button>
+      <button className="toolbar-button" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}>
+        <FaAlignRight />
+      </button>
     </div>
   );
 }

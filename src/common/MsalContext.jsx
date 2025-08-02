@@ -39,7 +39,6 @@ export const MsalProvider = ({ children }) => {
   const login = async (navigate) => {
     try {
       const loginResponse = await msalInstance.loginPopup(loginRequest);
-      console.log("[MSAL] loginPopup response:", loginResponse);
 
       const tokenResponse = await msalInstance.acquireTokenSilent({
         ...loginRequest,

@@ -3,22 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://craigberry1983.github.io/proof-of-concept",
+  "homepage": "https://craigberry1983.github.io/proof-of-concept/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.16.0",
+    "@lexical/react": "^0.33.1",
+    "lexical": "^0.33.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.1",
-    "rimraf": "^6.0.1"
+    "vite-plugin-gh-pages": "^1.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
