@@ -23,17 +23,6 @@ function SendScreen() {
   const [userEmail, setUserEmail] = useState("");
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
 
-  //auto-scroll
-  const toRef = useRef();
-  const subjectRef = useRef();
-  const bodyRef = useRef();
-
-  const scrollIntoView = (ref) => {
-    if (ref.current) {
-      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
-
   useEffect(() => {
     if (accessToken) {
       fetch("https://graph.microsoft.com/v1.0/me", {
@@ -97,8 +86,6 @@ function SendScreen() {
   const CustomContent = useMemo(() => {
     return (
       <ContentEditable
-        ref={bodyRef}
-        onFocus={() => scrollIntoView(bodyRef)}
         style={{
           flex: 1,
           overflowY: "auto",
@@ -143,8 +130,8 @@ function SendScreen() {
           </button>
         </header>
         <EditorToolbar />
-        <input ref={toRef} type="email" placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} onFocus={() => scrollIntoView(toRef)} />
-        <input ref={subjectRef} type="text" placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} onFocus={() => scrollIntoView(subjectRef)} />
+        <input type="email" placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} />
+        <input type="text" placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
         <LiveScanPlugin />
         <RichTextPlugin className="message-area" contentEditable={CustomContent} ErrorBoundary={LexicalErrorBoundary}></RichTextPlugin>
         <HistoryPlugin />
