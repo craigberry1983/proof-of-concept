@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
+    <title>Redirecting…</title>
     <script>
-        const base = '/proof-of-concept';
-        const path = location.pathname.replace(new RegExp(`^${base}`), '');
-        const target = base + path + location.search + location.hash;
-        location.replace(target);
+        (function () {
+            const base = '/proof-of-concept';
+
+            //get the path that caused the 404
+            const current = window.location.pathname;
+
+            //only redirect if not already inside the base path
+            if (!current.startsWith(base)) {
+                const newUrl = base + current + window.location.search + window.location.hash;
+                window.location.replace(newUrl);
+            }
+        })();
     </script>
 </head>
 
 <body>
-    <p>Redirecting…</p>
+    <h1>Redirecting…</h1>
 </body>
 
 </html>
