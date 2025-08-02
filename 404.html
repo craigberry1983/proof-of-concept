@@ -1,15 +1,18 @@
+<!DOCTYPE html>
 <html>
 
 <head>
+    <meta charset="UTF-8" />
     <script>
-        // redirect to index.html while preserving full URL path
-        const redirectTo = '/proof-of-concept' + location.pathname + location.search + location.hash;
-        location.replace(redirectTo);
+        const base = '/proof-of-concept';
+        const path = location.pathname.replace(new RegExp(`^${base}`), '');
+        const target = base + path + location.search + location.hash;
+        location.replace(target);
     </script>
 </head>
 
 <body>
-    <p>Redirecting...</p>
+    <p>Redirecting…</p>
 </body>
 
 </html>
