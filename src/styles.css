@@ -31,19 +31,19 @@ body > #root {
 
 /* disclaimer screen */
 
-.disclaimer {
+.welcome-user {
   padding: 2rem;
 }
 
-.disclaimer h1 {
+.welcome-user h1 {
   margin-bottom: 1rem;
 }
 
-.disclaimer p {
+.welcome-user p {
   margin-bottom: 1rem;
 }
 
-.disclaimer button {
+.welcome-user button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
 }

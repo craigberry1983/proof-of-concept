@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMsal } from "../common/MsalContext";
+import { useState, useEffect, useMemo } from "react";
+import { useMsal } from "@azure/msal-react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -14,8 +13,7 @@ import { FaTimes, FaCog, FaPaperPlane, FaUndo, FaRedo, FaBold, FaItalic, FaUnder
 import "../styles.css";
 
 function SendScreen() {
-  const navigate = useNavigate();
-  const { accessToken, account, logout, isReady } = useMsal();
+  const { accessToken, account, instance } = useMsal();
 
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
@@ -78,9 +76,11 @@ function SendScreen() {
 
   const confirmLogout = () => setShowConfirmLogout(true);
   const cancelLogout = () => setShowConfirmLogout(false);
-  const executeLogout = async () => {
-    await logout();
-    navigate("/");
+  const handleLogout = async () => {
+    instance.logoutPopup({
+      postLogoutRedirectUri: "/",
+    });
+    window.location.reload();
   };
 
   const CustomContent = useMemo(() => {
@@ -142,7 +142,7 @@ function SendScreen() {
           <div className="modal">
             <p>Are you sure you want to sign out?</p>
             <button onClick={cancelLogout}>Cancel</button>
-            <button onClick={executeLogout}>Sign Out</button>
+            <button onClick={handleLogout}>Sign Out</button>
           </div>
         </div>
       )}

@@ -1,20 +1,31 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import DisclaimerScreen from "./DisclaimerScreen";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
+import { loginRequest } from "../auth/authConfig";
+import WelcomeUser from "./WelcomeUser";
 import SendScreen from "./SendScreen";
-import { useMsal } from "../common/MsalContext";
 
 function App() {
-  const { isReady, accessToken } = useMsal();
+  const { instance } = useMsal();
+  const activeAccount = instance.getActiveAccount();
 
-  if (!isReady) {
-    return null;
-  }
+  const handleLoginRedirect = () => {
+    instance
+      .loginRedirect({
+        ...loginRequest,
+        prompt: "create",
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
-    <Routes>
-      <Route path="/" element={<DisclaimerScreen />} />
-      <Route path="/send" element={accessToken ? <SendScreen /> : <Navigate to="/" />} />
-    </Routes>
+    <div className="App">
+      <AuthenticatedTemplate>{activeAccount ? <SendScreen /> : null}</AuthenticatedTemplate>
+      <UnauthenticatedTemplate>
+        <>
+          <WelcomeUser />
+          <button onClick={handleLoginRedirect}>Login</button>
+        </>
+      </UnauthenticatedTemplate>
+    </div>
   );
 }
 
