@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { HashRouter } from "react-router-dom";
 import App from "./components/App.jsx";
 import { useAuthProvider } from "./auth/AuthProvider.jsx";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 
 const { AuthProvider } = useAuthProvider();

@@ -1,9 +1,9 @@
 import React from "react";
-
+import { Container } from "react-bootstrap";
 function WelcomeUser() {
   return (
-    <div className="welcome-user">
-      <h1>Proof of Concept</h1>
+    <Container>
+      <h1 className="w-100 text-center">Proof of Concept</h1>
       <details>
         <summary>
           <strong>What is this, and how is it used?</strong>
@@ -20,9 +20,6 @@ function WelcomeUser() {
           <br />
           <br />
           <strong>IMPORTANT: If you proceed, the email will be sent FROM YOUR ACCOUNT.</strong>
-          <br />
-          <br />
-          To better reflect real-world conditions, you can simulate network delay via the settings page (accessible via the gear icon).
         </p>
       </details>
       <br />
@@ -75,7 +72,7 @@ function WelcomeUser() {
           configuring the sender domain (e.g., SPF, DKIM, DMARC).
         </em>
       </p>
-    </div>
+    </Container>
   );
 }
 
