@@ -5,13 +5,18 @@
 
 import { LogLevel } from '@azure/msal-browser';
 
+const isLocalhost = window.location.hostname === "localhost";
+
 export const msalConfig = {
     auth: {
         clientId: '21a12e53-22e1-48f3-bdc2-23dba681fbbc',
         authority: 'https://login.microsoftonline.com/common/',
-        redirectUri: '/',
+        redirectUri: isLocalhost
+            ? "http://localhost:5173/proof-of-concept/"
+            : "https://craigberry1983.github.io/proof-of-concept/",
+
         postLogoutRedirectUri: '/',
-        navigateToLoginRequestUrl: false,
+        navigateToLoginRequestUrl: true,
     },
     cache: {
         cacheLocation: 'sessionStorage',

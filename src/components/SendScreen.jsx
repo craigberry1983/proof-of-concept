@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useMsal } from "@azure/msal-react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -9,17 +9,17 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { LiveScanPlugin } from "./LiveScanPlugin";
 import { UNDO_COMMAND, REDO_COMMAND, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND } from "lexical";
 import { FaTimes, FaCog, FaPaperPlane, FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa";
-
+import { $generateHtmlFromNodes } from "@lexical/html";
+import { loginRequest } from "../auth/authConfig";
 import "../styles.css";
 
 function SendScreen() {
   const { accessToken, account, instance } = useMsal();
-
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     if (accessToken) {
@@ -39,15 +39,40 @@ function SendScreen() {
   }, [accessToken, account]);
 
   const handleSend = async () => {
-    if (!accessToken || !to) {
-      alert("Missing token or recipient.");
+    const activeAccount = account || instance.getActiveAccount();
+    if (!activeAccount) {
+      alert("No signed-in account!");
+      return;
+    }
+
+    const response = await instance.acquireTokenSilent({
+      scopes: ["Mail.Send", "User.Read"],
+      account: activeAccount,
+    });
+
+    const accessToken = response.accessToken;
+
+    if (!to) {
+      alert("Missing recipient!");
+      return;
+    }
+
+    const editor = editorRef.current;
+    let htmlContent = "";
+
+    if (editor) {
+      await editor.update(() => {
+        htmlContent = $generateHtmlFromNodes(editor, null);
+      });
+    } else {
+      alert("Missing editor ref!");
       return;
     }
 
     const email = {
       message: {
         subject,
-        body: { contentType: "Text", content: body },
+        body: { contentType: "HTML", content: htmlContent },
         toRecipients: [{ emailAddress: { address: to } }],
       },
       saveToSentItems: "true",
@@ -115,7 +140,7 @@ function SendScreen() {
 
   return (
     <div className="send-page">
-      <LexicalComposer initialConfig={lexicalConfig}>
+      <LexicalComposer initialConfig={{ ...lexicalConfig }}>
         <header>
           <button className="icon-button close-button" onClick={confirmLogout}>
             <FaTimes />
@@ -135,6 +160,7 @@ function SendScreen() {
         <LiveScanPlugin />
         <RichTextPlugin className="message-area" contentEditable={CustomContent} ErrorBoundary={LexicalErrorBoundary}></RichTextPlugin>
         <HistoryPlugin />
+        <EditorCapturePlugin editorRef={editorRef} />
       </LexicalComposer>
 
       {showConfirmLogout && (
@@ -184,6 +210,14 @@ function EditorToolbar() {
       </button>
     </div>
   );
+}
+
+function EditorCapturePlugin({ editorRef }) {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    editorRef.current = editor;
+  }, [editor]);
+  return null;
 }
 
 export default SendScreen;

@@ -21,15 +21,20 @@ body {
   outline: none;
 }
 
+body {
+  background-color: black;
+}
+
 body > #root {
   display: flex;
   flex-direction: column;
   max-width: 600px;
   height: 100dvh;
   margin: auto;
+  background-color: white;
 }
 
-/* disclaimer screen */
+/* welcome user screen */
 
 .welcome-user {
   padding: 2rem;

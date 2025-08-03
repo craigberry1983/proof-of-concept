@@ -20,10 +20,10 @@ function App() {
     <div className="App">
       <AuthenticatedTemplate>{activeAccount ? <SendScreen /> : null}</AuthenticatedTemplate>
       <UnauthenticatedTemplate>
-        <>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <WelcomeUser />
           <button onClick={handleLoginRedirect}>Login</button>
-        </>
+        </div>
       </UnauthenticatedTemplate>
     </div>
   );
