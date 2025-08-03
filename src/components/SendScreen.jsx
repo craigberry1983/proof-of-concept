@@ -10,7 +10,6 @@ import { LiveScanPlugin } from "./LiveScanPlugin";
 import { UNDO_COMMAND, REDO_COMMAND, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND } from "lexical";
 import { FaTimes, FaCog, FaPaperPlane, FaUndo, FaRedo, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa";
 import { $generateHtmlFromNodes } from "@lexical/html";
-import { loginRequest } from "../auth/authConfig";
 import "../styles.css";
 
 function SendScreen() {
@@ -127,6 +126,7 @@ function SendScreen() {
     namespace: "alphypoc",
     theme: {
       text: {
+        profanity: "profanity-highlight",
         bold: "text-bold",
         italic: "text-italic",
         underline: "text-underline",
